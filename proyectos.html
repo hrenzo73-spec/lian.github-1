@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Proyectos | Lian Renzo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Rajdhani:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Rajdhani:wght@500&display=swap" rel="stylesheet" />
   <style>
     body {
       background: radial-gradient(circle at top, #0a0a0a, #000);
@@ -52,12 +51,13 @@
       transition: color 0.3s ease, border-bottom 0.3s ease;
     }
 
-    nav a:hover, nav a.activo {
+    nav a:hover,
+    nav a.activo {
       color: #ffcc00;
       border-bottom: 2px solid #ffcc00;
     }
 
-    .proyectos-container {
+    main.proyectos-container {
       padding: 120px 40px 60px;
       max-width: 1200px;
       margin: auto;
@@ -65,14 +65,14 @@
       animation: fadeIn 1.5s ease-in-out;
     }
 
-    .proyectos-container h1 {
+    main.proyectos-container h1 {
       font-family: 'Orbitron', sans-serif;
       color: #ffcc00;
       font-size: 2.5rem;
       text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
     }
 
-    .proyectos-container p {
+    main.proyectos-container p {
       color: #bbb;
       font-size: 1.1rem;
       max-width: 800px;
@@ -152,6 +152,10 @@
       backdrop-filter: blur(8px);
     }
 
+    .modal.active {
+      display: flex;
+    }
+
     .modal-content {
       background: #111;
       padding: 10px;
@@ -177,6 +181,7 @@
       font-size: 2rem;
       cursor: pointer;
       transition: 0.3s;
+      user-select: none;
     }
 
     .cerrar:hover {
@@ -193,8 +198,14 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
@@ -202,12 +213,12 @@
 <body>
 
   <header class="navbar">
-    <img src="uplita.png" alt="Logo Universidad" class="logo-img">
+    <img src="AMARILLO-removebg-preview.png" alt="Logo Universidad" class="logo-img" />
     <div class="logo">Lian Renzo Ñahuincopa Huamani</div>
     <nav>
       <a href="index.html">Inicio</a>
       <a href="sobre-mi.html">Sobre mí</a>
-    <a href="proyectos.html">Proyectos</a>
+      <a href="proyectos.html" class="activo">Proyectos</a>
       <a href="login.html">Cerrar sesión</a>
     </nav>
   </header>
@@ -219,12 +230,28 @@
       Cada semana incluye informes, presentaciones y archivos del curso.
     </p>
 
+    <a href="https://github.com/hrenzo73-spec/lian.github" target="_blank" class="btn">
+      Ir a mi repositorio GitHub
+    </a>
+
     <div class="grid-semanas" id="gridSemanas"></div>
 
+    <!-- Modal -->
     <div id="modal" class="modal">
       <div class="modal-content">
-        <span class="cerrar" onclick="cerrarModal()">&times;</span>
-        <iframe id="visor" src=""></iframe>
+        <span class="cerrar" id="cerrarModal">&times;</span>
+        <div id="selectorPDF"></div>
+        <iframe id="visor" src="" allowfullscreen></iframe>
+
+        <!-- 🔽 Botón GitHub dentro del visor -->
+        <div id="githubButtonContainer" style="text-align: center; margin-top: 15px;">
+          <a href="https://github.com/hrenzo73-spec/lian.github" 
+             target="_blank" 
+             class="btn"
+             style="margin-top: 10px;">
+             🔗 Ir a mi GitHub
+          </a>
+        </div>
       </div>
     </div>
   </main>
@@ -233,41 +260,109 @@
     © 2025 Lian Renzo Ñahuincopa Huamani | Proyecto académico Base de Datos II
   </footer>
 
+  <!-- ======= SCRIPT PRINCIPAL ======= -->
   <script>
-  const grid = document.getElementById("gridSemanas");
-  for (let i = 1; i <= 16; i++) {
-    const card = document.createElement("div");
-    card.className = "card-semana";
-    card.innerHTML = `
-      <h3>Semana ${i.toString().padStart(2, '0')}</h3>
-      <p>Resumen del trabajo y resultados alcanzados durante la semana ${i}.</p>
-      <button class="btn" onclick="mostrarSemana(${i})">Ver Contenido</button>
-    `;
-    grid.appendChild(card);
-  }
+    const baseURL = "https://hrenzo73-spec.github.io/lian.github";
 
-  function mostrarSemana(num) {
-    const modal = document.getElementById("modal");
-    const visor = document.getElementById("visor");
-    
-    // RUTA BASE DE TU GITHUB PAGES
-    const baseURL = "https://hrenzo73-spec.github.io";
-    const archivo = "informe.pdf"; // Cambia este nombre si tus PDFs tienen otro nombre
+    const archivos = {
+      1: [
+        { nombre: "Manual Técnico SQL Server", archivo: "semana-1/Manual%20T%C3%A9cnico%20de%20Instalaci%C3%B3n%20de%20SQL%20Server.pdf" },
+        { nombre: "Informe Técnico Lian", archivo: "semana-1/INFORME%20TECNICO-LIAN.pdf" },
+        { nombre: "Presentación Ciberseguridad", archivo: "semana-1/White%20and%20Blue%20Illustrated%20Technology%20Cybersecurity%20Presentation.pdf" }
+      ],
+      2: "semana-2/modelo%20conceptual%20y%20lógico.pdf",
+      3: "semana-3/Cuadro%20Comparativo%20de%20Sistemas%20de%20Gesti%C3%B3n%20de%20Bases%20de%20Datos.pdf",
+      4: [
+        { nombre: "Análisis y Diseño de la Arquitectura", archivo: "semana-4/analisis%20y%20dise%C3%B1o%20de%20la%20arquitectura%20de%20base%20de%20datos.pdf" },
+        { nombre: "Diseño de Arquitectura de la Base de Datos", archivo: "semana-4/dise%C3%B1o%20de%20aruitectura%20de%20la%20base%20de%20datos.pdf" }
+      ],
+      7: [
+        { nombre: "Base de Datos Parcial QhatuPeru", archivo: "semana-7/BASE%20DE%20DATOS-PARCIAL-QHATUPERU.pdf" },
+        { nombre: "Crear Base de Datos QhatuPeru", archivo: "semana-7/Crear%20Base%20de%20Datos%20qhatuperu.pdf" },
+        { nombre: "Crear Tablas B.D. QhatuPeru", archivo: "semana-7/Crear%20tablas(9)%20B.D.%20qhatuperu.pdf" },
+        { nombre: "Insertar Datos para las Tablas", archivo: "semana-7/Insertar%20datos%20para%20las%20tablas.pdf" },
+        { nombre: "Manual de Cómo Crear Cuenta en Azure", archivo: "semana-7/Manual%20de%20como%20crear%20cuenta%20en%20AZURE.pdf" }
+      ]
+    };
 
-    // Crear ruta completa
-    visor.src = `${baseURL}/semana-${num}/${archivo}`;
-    modal.style.display = "flex";
-  }
+    const grid = document.getElementById("gridSemanas");
 
-  function cerrarModal() {
-    document.getElementById("modal").style.display = "none";
-  }
+    for (let i = 1; i <= 16; i++) {
+      const card = document.createElement("div");
+      card.className = "card-semana";
+      card.innerHTML = `
+        <h3>Semana ${i.toString().padStart(2, "0")}</h3>
+        <p>Resumen del trabajo y resultados alcanzados durante la semana ${i}.</p>
+        <button class="btn" onclick="mostrarSemana(${i})">Ver Contenido</button>
+      `;
+      grid.appendChild(card);
+    }
 
-  window.onclick = (e) => {
-    if (e.target === document.getElementById("modal")) cerrarModal();
-  };
-</script>
+    function mostrarSemana(num) {
+      const modal = document.getElementById("modal");
+      const visor = document.getElementById("visor");
+      const selector = document.getElementById("selectorPDF");
 
+      const listaArchivos = archivos[num];
+
+      if (!listaArchivos) {
+        alert("No hay archivos disponibles para esta semana.");
+        return;
+      }
+
+      if (Array.isArray(listaArchivos)) {
+        let botonesHTML = "";
+        listaArchivos.forEach((item) => {
+          botonesHTML += `
+            <button class="btn" style="margin: 10px;" onclick="cargarPDF('${baseURL}/${item.archivo}')">
+              ${item.nombre}
+            </button>
+          `;
+        });
+        selector.innerHTML = botonesHTML;
+        visor.src = "";
+      } else {
+        selector.innerHTML = "";
+        visor.src = `${baseURL}/${listaArchivos}`;
+      }
+
+      modal.classList.add("active");
+    }
+
+    function cargarPDF(ruta) {
+      document.getElementById("visor").src = ruta;
+    }
+
+    document.getElementById("cerrarModal").onclick = () => cerrarModal();
+
+    window.onclick = (event) => {
+      if (event.target === document.getElementById("modal")) cerrarModal();
+    };
+
+    function cerrarModal() {
+      document.getElementById("modal").classList.remove("active");
+      document.getElementById("visor").src = "";
+      document.getElementById("selectorPDF").innerHTML = "";
+    }
+  </script>
+
+  <!-- ======= SUPABASE ======= -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://tisykseszbdyqsqymkai.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpc3lrc2VzemJkeXFzcXlta2FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NjI0NjAsImV4cCI6MjA3NjEzODQ2MH0.9-R1yQFcpH6X-NQM57H7gc6nHkP24tyMh89o3N1hdUk";
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) window.location.href = "login.html";
+    });
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) window.location.href = "login.html";
+    });
+  </script>
 </body>
 </html>
 
